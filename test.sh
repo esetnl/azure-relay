@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo henkie > /tmp/henk
+echo $@ > /tmp/henk
