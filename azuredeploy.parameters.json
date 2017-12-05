@@ -18,10 +18,10 @@
       "value": "16.04.0-LTS"
     },
     "customScriptFilePath": {
-      "value": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-discover-private-ip-dynamically/privateip.sh"
+      "value": "https://raw.githubusercontent.com/d-maasland/azure-relay/master/test.sh"
     },
     "customScriptCommandToExecute": {
-      "value": "sh privateip.sh "
+      "value": "sh test.sh "
     }
   }
 }
