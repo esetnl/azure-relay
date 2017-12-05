@@ -209,7 +209,6 @@
         "settings":{
           "fileUris":[
             "[variables('customScriptFilePath')]",
-            "https://EAV-0171625878:4d5chhke53@download.eset.com/com/eset/apps/business/es/linux/latest/esets.amd64.deb.bin"
           ],
           "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'))]"
         }
