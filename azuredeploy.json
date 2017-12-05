@@ -2,6 +2,12 @@
   "$schema":"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion":"1.0.0.0",
   "parameters":{
+      "vmName":{
+        "type":"string",
+        "metadata":{
+          "description":"Name for the Virtual Machine."
+        }
+    },
     "adminUsername":{
       "type":"string",
       "metadata":{
@@ -60,7 +66,7 @@
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef":"[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "customScriptFilePath": "https://raw.githubusercontent.com/d-maasland/azure-relay/master/test.sh",
-    "customScriptCommandToExecute": "sh test.sh"
+    "customScriptCommandToExecute": "/bin/bash ./test.sh",
   },
   "resources":[
     {
@@ -202,9 +208,9 @@
         "autoUpgradeMinorVersion":true,
         "settings":{
           "fileUris":[
-            "[variables('customScriptFilePath')]"
+            "variables('customScriptFilePath')"
           ],
-          "commandToExecute":"[concat(variables('customScriptCommandToExecute'))]"
+          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('license'))]"
         }
       }
     }
