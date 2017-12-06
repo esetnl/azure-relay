@@ -25,6 +25,8 @@ install_packages() {
     "socat"
     "postfix"
     "netfilter-persistent"
+    "unattended-upgrades"
+    "software-properties-common"
   )
 
   # List of debconf options
@@ -132,7 +134,7 @@ configure_esets() {
   # Enable wwwi
   /opt/eset/esets/sbin/esets_set --set="agent_enabled=yes" --section="wwwi"
   /opt/eset/esets/sbin/esets_set --set="listen_addr=0.0.0.0" --section="wwwi"
-  /opt/eset/esets/sbin/esets_set --set="listen_port=8443" --section="wwwi"
+  /opt/eset/esets/sbin/esets_set --set="listen_port=443" --section="wwwi"
   /opt/eset/esets/sbin/esets_set --set="username=$wwwi_user" --section="wwwi"
   /opt/eset/esets/sbin/esets_set --set="password=$wwwi_pass" --section="wwwi"
 
@@ -177,6 +179,11 @@ configure_socat() {
 }
 
 configure_iptables() {
+  # Create directory if it doesn't exist
+  if [ ! -d '/etc/iptables' ]; then
+    /bin/mkdir "/etc/iptables"
+  fi
+
   # Back-up old rules
   if [ -f "/etc/iptables/rules.v4" ]; then
     /bin/cp "/etc/iptables/rules.v4" "/etc/iptables/rules.v4.bak"
@@ -210,6 +217,14 @@ configure_iptables() {
   /bin/systemctl restart netfilter-persistent
 }
 
+configure_certificates() {
+  # Add certbot repository and install certbot
+  /usr/bin/add-apt-repository -y -- "ppa:certbot/certbot"
+  /usr/bin/apt-get "update"
+  /usr/bin/apt-get -y install -- "certbot"
+
+}
+
 #######
 # Run #
 #######
@@ -219,6 +234,7 @@ update_path
 configure_esets
 configure_socat
 configure_iptables
+configure_certificates
 
 # Exit cleanly if all went well
 exit 0
