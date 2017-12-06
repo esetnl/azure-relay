@@ -226,11 +226,13 @@ configure_certificates() {
   /usr/bin/apt-get -y install -- "certbot"
 
   # Request certificate
+  /sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
   /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$cert_email" --agree-tos --no-eff-email
   # Check if request worked
   if [ "$?" != "0" ]; then
     exit 16
   fi
+  /sbin/iptables -D INPUT -p tcp --dport 80 -j ACCEPT
 
   # Add to weekly cron
   if [ ! -f "/etc/cron.weekly/certbot" ]; then
