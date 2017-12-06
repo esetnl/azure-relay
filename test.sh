@@ -8,6 +8,8 @@ eav_pass="$2"
 lic_base64="$3"
 wwwi_user="$4"
 wwwi_pass="$5"
+cert_email="$6"
+fqdn="$7"
 
 #############
 # Functions #
@@ -24,7 +26,7 @@ install_packages() {
     "libc6-i386"
     "socat"
     "postfix"
-    "netfilter-persistent"
+    "iptables-persistent"
     "unattended-upgrades"
     "software-properties-common"
   )
@@ -223,17 +225,33 @@ configure_certificates() {
   /usr/bin/apt-get "update"
   /usr/bin/apt-get -y install -- "certbot"
 
+  # Request certificate
+  /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$cert_email" --agree-tos --no-eff-email
+  # Check if request worked
+  if [ "$?" != "0" ]; then
+    exit 16
+  fi
+
+  # Add to weekly cron
+  if [ ! -f "/etc/cron.weekly/certbot" ]; then
+    /usr/bin/wget -O "/etc/cron.weekly/certbot" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/certbot"
+    
+    # Check if download was succesful
+    if [ "$?" != "0" ]; then
+      exit 17
+    fi
+  fi
 }
 
 #######
 # Run #
 #######
 install_packages
+configure_iptables
 install_esets
 update_path
 configure_esets
 configure_socat
-configure_iptables
 configure_certificates
 
 # Exit cleanly if all went well

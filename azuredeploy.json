@@ -63,12 +63,38 @@
     "vmExtensionName":"myCustomScriptExtension",
     "vmSize":"Standard_A1",
     "virtualNetworkName":"MyVNET",
+    "networkSecurityGroupName": "networkSecurityGroup",
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef":"[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "customScriptFilePath": "https://raw.githubusercontent.com/d-maasland/azure-relay/master/test.sh",
-    "customScriptCommandToExecute": "/bin/bash ./test.sh"
+    "customScriptCommandToExecute": "/bin/bash ./test.sh",
+    "apiVersion": "2015-06-15"
   },
   "resources":[
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroupName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "first_rule",
+            "properties": {
+              "description": "This is the first rule",
+              "protocol": "Tcp",
+              "sourcePortRange": "23-45",
+              "destinationPortRange": "46-56",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 123,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
     {
       "type":"Microsoft.Storage/storageAccounts",
       "name":"[variables('storageAccountName')]",

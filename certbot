@@ -1,0 +1,5 @@
+#!/bin/bash
+
+/sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+/usr/bin/certbot renew
+/sbin/iptables -D INPUT -p tcp --dport 80 -j ACCEPT
