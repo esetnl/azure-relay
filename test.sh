@@ -24,13 +24,13 @@ install_packages() {
     "libc6-i386"
     "socat"
     "postfix"
-    "iptables-persistent"
+    "netfilter-persistent"
   )
 
   # List of debconf options
   debconf_options=(
-    "iptables-persistent iptables-persistent/autosave_v4 boolean false"
-    "iptables-persistent iptables-persistent/autosave_v6 boolean false"
+    "netfilter-persistent netfilter-persistent/autosave_v4 boolean false"
+    "netfilter-persistent netfilter-persistent/autosave_v6 boolean false"
   )
 
   if [ -f "/tmp/debconf_options.txt" ]; then
@@ -58,6 +58,9 @@ install_packages() {
       exit 4
     fi
   done
+
+  # Cleanup
+  /bin/rm -f -- "/tmp/debconf_options.txt"
 }
 
 # Download and install esets
@@ -173,6 +176,40 @@ configure_socat() {
   fi
 }
 
+configure_iptables() {
+  # Back-up old rules
+  if [ -f "/etc/iptables/rules.v4" ]; then
+    /bin/cp "/etc/iptables/rules.v4" "/etc/iptables/rules.v4.bak"
+  fi
+
+  if [ -f "/etc/iptables/rules.v6" ]; then
+    /bin/cp "/etc/iptables/rules.v6" "/etc/iptables/rules.v6.bak"
+  fi
+
+  # IPv4 config
+  /usr/bin/wget -O "/etc/iptables/rules.v4" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/rules.v4"
+  
+  # Check if download was succesful
+  if [ "$?" != "0" ]; then
+    exit 14
+  fi
+
+  /bin/chmod 600 -- "/etc/iptables/rules.v4"
+
+  # IPv6 Config
+  /usr/bin/wget -O "/etc/iptables/rules.v6" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/rules.v6"
+  
+  # Check if download was succesful
+  if [ "$?" != "0" ]; then
+    exit 15
+  fi
+
+  /bin/chmod 600 -- "/etc/iptables/rules.v6"
+
+  # Apply new rules
+  /bin/systemctl restart netfilter-persistent
+}
+
 #######
 # Run #
 #######
@@ -181,6 +218,7 @@ install_esets
 update_path
 configure_esets
 configure_socat
+configure_iptables
 
 # Exit cleanly if all went well
 exit 0
