@@ -38,6 +38,24 @@
         "description":"ESET License password"
       }
     },
+    "licenseFile":{
+      "type":"securestring",
+      "metadata":{
+        "description":"ESET License File (Base64 encoded)"
+      }
+    },
+    "webUser":{
+      "type":"string",
+      "metadata":{
+        "description":"ESET wwwi username"
+      }
+    },
+    "webPassword":{
+      "type":"securestring",
+      "metadata":{
+        "description":"ESET wwwi password"
+      }
+    },
     "ubuntuOSVersion":{
       "type":"string",
       "defaultValue":"16.04.0-LTS",
@@ -234,9 +252,9 @@
         "autoUpgradeMinorVersion":true,
         "settings":{
           "fileUris":[
-            "[variables('customScriptFilePath')]",
+            "[variables('customScriptFilePath')]"
           ],
-          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'))]"
+          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('certificateEmail'), ' ', [reference(resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn])]"
         }
       }
     }
