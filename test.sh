@@ -31,6 +31,7 @@ install_packages() {
     "iptables-persistent"
     "unattended-upgrades"
     "software-properties-common"
+    "bsd-mailx"
   )
 
   # List of debconf options
@@ -255,7 +256,7 @@ configure_postfix() {
   fi
 
   # Change config
-  /bin/sed -i 's|<azure-fqdn>|$fqdn|g' -- "/etc/postfix/main.cf"
+  /bin/sed -i "s|<azure-fqdn>|$fqdn|g" -- "/etc/postfix/main.cf"
   /bin/echo "$domain" > "/etc/postfix/domains"
   /bin/echo "$domain relay:[$relay_to]" > "/etc/postfix/transport"
   /usr/sbin/postmap -- "/etc/postfix/transport"
