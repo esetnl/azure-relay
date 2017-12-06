@@ -1,0 +1,11 @@
+[Unit]
+Description=Socat tcp to eset socket
+After=esets.service
+
+[Service]
+ExecStart=/usr/bin/socat -d -d TCP4-LISTEN:3537,range=127.0.0.1/8,fork UNIX-CONNECT:/var/run/esets_smfi.sock
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
