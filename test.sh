@@ -9,9 +9,9 @@ lic_base64="$3"
 wwwi_user="$4"
 wwwi_pass="$5"
 cert_email="$6"
-fqdn="$7"
-domain="$8"
-relay_to="$9"
+domain="$7"
+relay_to="$8"
+fqdn="$9"
 
 #############
 # Functions #
