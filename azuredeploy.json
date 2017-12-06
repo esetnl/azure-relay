@@ -44,7 +44,7 @@
         "description":"ESET License File (Base64 encoded)"
       }
     },
-    "webUser":{
+    "webUsername":{
       "type":"string",
       "metadata":{
         "description":"ESET wwwi username"
@@ -54,6 +54,24 @@
       "type":"securestring",
       "metadata":{
         "description":"ESET wwwi password"
+      }
+    },
+    "certificateEmail":{
+      "type":"securestring",
+      "metadata":{
+        "description":"Email address for certificate"
+      }
+    },
+    "emailDomain":{
+      "type":"string",
+      "metadata":{
+        "description":"Domain to relay email for"
+      }
+    },
+    "relayTo":{
+      "type":"string",
+      "metadata":{
+        "description":"Address to relay mail to"
       }
     },
     "ubuntuOSVersion":{
@@ -79,7 +97,7 @@
     "publicIPAddressName":"myPublicIP",
     "publicIPAddressType":"Dynamic",
     "vmExtensionName":"myCustomScriptExtension",
-    "vmSize":"Standard_A1",
+    "vmSize":"Standard_A0",
     "virtualNetworkName":"MyVNET",
     "networkSecurityGroupName": "networkSecurityGroup",
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
@@ -212,14 +230,7 @@
           },
           "osDisk":{
             "createOption":"FromImage"
-          },
-          "dataDisks":[
-            {
-              "diskSizeGB":1023,
-              "lun":0,
-              "createOption":"Empty"
-            }
-          ]
+          }
         },
         "networkProfile":{
           "networkInterfaces":[
@@ -254,7 +265,7 @@
           "fileUris":[
             "[variables('customScriptFilePath')]"
           ],
-          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('certificateEmail'), ' ', [reference(resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn])]"
+          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('certificateEmail'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn), ' ', parameters('emailDomain'), ' ', parameters('relayTo')]"
         }
       }
     }

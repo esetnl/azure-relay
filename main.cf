@@ -52,6 +52,4 @@ transport_maps = hash:/etc/postfix/transport
 relay_domains = /etc/postfix/domains
 smtpd_banner = $myhostname ESMTP
 mail_name=ESET Mail Security
-compatibility_level = 2
-mynetworks = hash:/etc/postfix/network_table
 smtpd_milters = inet:127.0.0.1:3537

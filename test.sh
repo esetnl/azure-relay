@@ -10,6 +10,8 @@ wwwi_user="$4"
 wwwi_pass="$5"
 cert_email="$6"
 fqdn="$7"
+domain="$8"
+relay_to="$9"
 
 #############
 # Functions #
@@ -245,6 +247,23 @@ configure_certificates() {
   fi
 }
 
+configure_postfix() {
+  /usr/bin/wget -O "/etc/postfix/main.cf" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/main.cf"
+  # Check if download was succesful
+  if [ "$?" != "0" ]; then
+    exit 18
+  fi
+
+  # Change config
+  /bin/sed -i 's|<azure-fqdn>|$fqdn|g' -- "/etc/postfix/main.cf"
+  /bin/echo "$domain" > "/etc/postfix/domains"
+  /bin/echo "$domain relay:[$relay_to]" > "/etc/postfix/transport"
+  /usr/sbin/postmap -- "/etc/postfix/transport"
+
+  # Restart postfix
+  /bin/systemctl restart postfix
+}
+
 #######
 # Run #
 #######
@@ -255,6 +274,7 @@ update_path
 configure_esets
 configure_socat
 configure_certificates
+configure_postfix
 
 # Exit cleanly if all went well
 exit 0
