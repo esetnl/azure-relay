@@ -6,6 +6,8 @@
 eav_user="$1"
 eav_pass="$2"
 lic_base64="$3"
+wwwi_user="$4"
+wwwi_pass="$5"
 
 #############
 # Functions #
@@ -15,13 +17,29 @@ lic_base64="$3"
 install_packages() {
   # Don't ask questions during installation of packages
   export DEBIAN_FRONTEND="noninteractive"
+  export DEBCONF_NONINTERACTIVE_SEEN="true"
 
   # List of packages to be installed
   packages=(
     "libc6-i386"
     "socat"
     "postfix"
+    "iptables-persistent"
   )
+
+  # List of debconf options
+  debconf_options=(
+    "iptables-persistent iptables-persistent/autosave_v4 boolean false"
+    "iptables-persistent iptables-persistent/autosave_v6 boolean false"
+  )
+
+  if [ -f "/tmp/debconf_options.txt" ]; then
+    /bin/rm -f -- "/tmp/debconf_options.txt"
+  fi
+
+  for debconf_option in "${debconf_options[@]}"; do
+    /bin/echo "$debconf_option" >> "/tmp/debconf_options.txt"
+  done
 
   # Update package list
   /usr/bin/apt-get "update"
@@ -85,16 +103,7 @@ update_path() {
 configure_esets() {
   # Set update username and password
   /opt/eset/esets/sbin/esets_set --set="av_update_username=$eav_user" --section="global"
-  # Check if set was succesful
-  if [ "$?" != "0" ]; then
-    exit 6
-  fi
-
   /opt/eset/esets/sbin/esets_set --set="av_update_password=$eav_pass" --section="global"
-  # Check if set was succesful
-  if [ "$?" != "0" ]; then
-    exit 6
-  fi
 
   # Import lic file
   if [ -f "/tmp/MailSecurity.lic" ]; then
@@ -110,34 +119,57 @@ configure_esets() {
 
   # Import license file
   /opt/eset/esets/sbin/esets_lic --import "/tmp/MailSecurity.lic"
-  # Check if import was succesful
-  if [ "$?" != "0" ]; then
-    exit 8
-  else
-    /bin/rm -f -- "/tmp/MailSecurity.lic"
-    
-    # Update esets
-    /opt/eset/esets/sbin/esets_update
-  fi
+  /bin/rm -f -- "/tmp/MailSecurity.lic"
+  /opt/eset/esets/sbin/esets_update
 
   # Configure smfi scanner
   /opt/eset/esets/sbin/esets_set --set="agent_enabled=yes" --section="smfi"
-  # Check if set was succesful
-  if [ "$?" != "0" ]; then
-    exit 9
-  fi
-
   /opt/eset/esets/sbin/esets_set --set="smfi_sock_path=/var/run/esets_smfi.sock" --section="smfi"
-  # Check if set was succesful
-  if [ "$?" != "0" ]; then
-    exit 9
-  fi
 
+  # Enable wwwi
+  /opt/eset/esets/sbin/esets_set --set="agent_enabled=yes" --section="wwwi"
+  /opt/eset/esets/sbin/esets_set --set="listen_addr=0.0.0.0" --section="wwwi"
+  /opt/eset/esets/sbin/esets_set --set="listen_port=8443" --section="wwwi"
+  /opt/eset/esets/sbin/esets_set --set="username=$wwwi_user" --section="wwwi"
+  /opt/eset/esets/sbin/esets_set --set="password=$wwwi_pass" --section="wwwi"
+
+  # Configure antispam
+  /opt/eset/esets/sbin/esets_set --set="action_as=scan" --section="smfi"
+  /opt/eset/esets/sbin/esets_set --set="as_eml_header_modification=yes" --section="smfi"
+  
+  # Configure AV
+  /opt/eset/esets/sbin/esets_set --set="av_quarantine_enabled=yes" --section="smfi"
+  
   # Restart service
-  /usr/sbin/service esets restart
+  /bin/systemctl restart esets
   # Check if restart was succesful
   if [ "$?" != "0" ]; then
     exit 10
+  fi
+}
+
+# Configure socat to run as a service
+configure_socat() {
+  if [ ! -f "/etc/systemd/system/socat.service" ]; then
+    /usr/bin/wget -O "/etc/systemd/system/socat.service" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/socat.service"
+    # Check if download was succesful
+    if [ "$?" != "0" ]; then
+      exit 11
+    fi
+
+    # Check if chmod was succesful
+    if [ "$?" != "0" ]; then
+      exit 12
+    fi
+    /bin/chmod 644 -- "/etc/systemd/system/socat.service"
+
+    # Install the service
+    /bin/systemctl enable socat
+    # Check if install was succesful
+    if [ "$?" != "0" ]; then
+      exit 13
+    fi
+    /bin/systemctl start socat
   fi
 }
 
@@ -148,6 +180,7 @@ install_packages
 install_esets
 update_path
 configure_esets
+configure_socat
 
 # Exit cleanly if all went well
 exit 0

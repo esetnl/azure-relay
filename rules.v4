@@ -1,0 +1,25 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+# local
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# related
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# ssh
+-A INPUT -p tcp --dport 22 -j ACCEPT
+
+# esets wwwi
+-A INPUT -p tcp --dport 8443 -j ACCEPT
+
+# smtp
+-A INPUT -p tcp --dport 25 -j ACCEPT
+
+# output
+-A OUTPUT -j ACCEPT
+COMMIT

@@ -1,0 +1,22 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+
+# local
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# icmp (needed for v6)
+-A INPUT -p ipv6-icmp -j ACCEPT
+
+# dhcp
+-A INPUT -m state --state NEW -m udp -p udp --dport 546 -d fe80::/64 -j ACCEPT
+
+# related
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# output
+-A OUTPUT -j ACCEPT
+
+COMMIT
