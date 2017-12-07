@@ -258,6 +258,10 @@ configure_postfix() {
     exit 18
   fi
 
+  # Add alias for admin user
+  echo "root: $admin_email" >> /etc/aliases
+  /usr/bin/newaliases
+
   # Change config
   /bin/sed -i "s|<azure-fqdn>|$fqdn|g" -- "/etc/postfix/main.cf"
   /bin/echo "$domain" > "/etc/postfix/domains"
