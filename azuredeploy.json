@@ -86,7 +86,7 @@
     "subnetPrefix":"10.0.0.0/24",
     "storageAccountType":"Standard_LRS",
     "publicIPAddressName":"[concat(parameters('vmName'), '-publicIp')]",
-    "publicIPAddressType":"Dynamic",
+    "publicIPAddressType":"Static",
     "vmExtensionName":"esetsVmExtension",
     "vmSize":"Standard_A0",
     "virtualNetworkName":"[concat(parameters('vmName'), '-VNET')]",
@@ -241,7 +241,7 @@
     {
       "type":"Microsoft.Compute/virtualMachines/extensions",
       "name":"[concat(parameters('vmName'), '/', variables('vmExtensionName'))]",
-      "apiVersion":"[variables('apiVersion')]",
+      "apiVersion":"2017-12-01",
       "location":"[resourceGroup().location]",
       "dependsOn":[
         "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",

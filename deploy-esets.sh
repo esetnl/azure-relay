@@ -262,6 +262,9 @@ configure_postfix() {
   /bin/echo "root: $admin_email" >> /etc/aliases
   /usr/bin/newaliases
 
+  /bin/echo "root $admin_email" >> /etc/postfix/virtual
+  /usr/sbin/postmap -- "/etc/postfix/virtual"
+
   # Change config
   /bin/sed -i "s|<azure-fqdn>|$fqdn|g" -- "/etc/postfix/main.cf"
   /bin/echo "$domain" > "/etc/postfix/domains"
