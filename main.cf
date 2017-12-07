@@ -1,28 +1,17 @@
-queue_directory = /var/spool/postfix
-command_directory = /usr/sbin
-daemon_directory = /usr/libexec/postfix
-# Postfix settings
-data_directory = /var/lib/postfix
-mail_owner = postfix
-inet_interfaces = all
-inet_protocols = all
-unknown_local_recipient_reject_code = 550
-debug_peer_level = 2
-debugger_command =
-   PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-   ddd $daemon_directory/$process_name $process_id & sleep 5
-sendmail_path = /usr/sbin/sendmail.postfix
-newaliases_path = /usr/bin/newaliases.postfix
-mailq_path = /usr/bin/mailq.postfix
-setgid_group = postdrop
-html_directory = no
-manpage_directory = /usr/share/man
-sample_directory = /usr/share/doc/postfix-2.10.1/samples
-readme_directory = /usr/share/doc/postfix-2.10.1/README_FILES
-meta_directory = /etc/postfix
-shlib_directory = no
+# postfix settings
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+biff = no
+readme_directory = no
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
+mydestination = localhost.localdomain,localhost
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = all
+compatibility_level=2
 
 # tls settings
 smtpd_tls_cert_file=/etc/letsencrypt/live/<azure-fqdn>/fullchain.pem
@@ -51,5 +40,5 @@ myhostname = <azure-fqdn>
 transport_maps = hash:/etc/postfix/transport
 relay_domains = /etc/postfix/domains
 smtpd_banner = $myhostname ESMTP
-mail_name=ESET Mail Security
+mail_name=$myhostname
 smtpd_milters = inet:127.0.0.1:3537

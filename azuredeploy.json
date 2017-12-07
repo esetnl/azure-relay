@@ -2,11 +2,11 @@
   "$schema":"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion":"1.0.0.0",
   "parameters":{
-      "vmName":{
-        "type":"string",
-        "metadata":{
-          "description":"Name for the Virtual Machine."
-        }
+    "vmName":{
+      "type":"string",
+      "metadata":{
+        "description":"Name for the Virtual Machine."
+      }
     },
     "adminUsername":{
       "type":"string",
@@ -20,6 +20,12 @@
         "description":"Password for the Virtual Machine."
       }
     },
+    "adminEmail":{
+      "type":"string",
+      "metadata":{
+        "description":"Used for notifications and SSL certificates."
+      }
+    },
     "dnsLabelPrefix":{
       "type":"string",
       "metadata":{
@@ -29,63 +35,48 @@
     "licenseUsername":{
       "type":"string",
       "metadata":{
-        "description":"ESET License username (EAV-XXXXXXXXXX)"
+        "description":"ESET License username (EAV-XXXXXXXXXX)."
       }
     },
     "licensePassword":{
       "type":"securestring",
       "metadata":{
-        "description":"ESET License password"
+        "description":"ESET License password."
       }
     },
     "licenseFile":{
-      "type":"securestring",
+      "type":"string",
       "metadata":{
-        "description":"ESET License File (Base64 encoded)"
+        "description":"ESET License File (Base64 encoded)."
       }
     },
     "webUsername":{
       "type":"string",
       "metadata":{
-        "description":"ESET wwwi username"
+        "description":"ESET wwwi username."
       }
     },
     "webPassword":{
       "type":"securestring",
       "metadata":{
-        "description":"ESET wwwi password"
-      }
-    },
-    "certificateEmail":{
-      "type":"securestring",
-      "metadata":{
-        "description":"Email address for certificate"
+        "description":"ESET wwwi password."
       }
     },
     "emailDomain":{
       "type":"string",
       "metadata":{
-        "description":"Domain to relay email for"
+        "description":"Domain to relay email for."
       }
     },
     "relayTo":{
       "type":"string",
       "metadata":{
-        "description":"Address to relay mail to"
-      }
-    },
-    "ubuntuOSVersion":{
-      "type":"string",
-      "defaultValue":"16.04.0-LTS",
-      "allowedValues":[
-        "16.04.0-LTS"
-      ],
-      "metadata":{
-        "description":"The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
+        "description":"Hostname or IP to relay mail to."
       }
     }
   },
   "variables":{
+    "ubuntuOSVersion":"16.04.3-LTS",
     "storageAccountName":"[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
     "imagePublisher":"Canonical",
     "imageOffer":"UbuntuServer",
@@ -99,33 +90,33 @@
     "vmExtensionName":"myCustomScriptExtension",
     "vmSize":"Standard_A0",
     "virtualNetworkName":"MyVNET",
-    "networkSecurityGroupName": "networkSecurityGroup",
+    "networkSecurityGroupName":"networkSecurityGroup",
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef":"[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "customScriptFilePath": "https://raw.githubusercontent.com/d-maasland/azure-relay/master/test.sh",
-    "customScriptCommandToExecute": "/bin/bash ./test.sh",
-    "apiVersion": "2015-06-15"
+    "customScriptFilePath":"https://raw.githubusercontent.com/d-maasland/azure-relay/master/deploy-esets.sh",
+    "customScriptCommandToExecute":"/bin/bash deploy-esets.sh",
+    "apiVersion":"2017-04-01"
   },
   "resources":[
     {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('networkSecurityGroupName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "securityRules": [
+      "apiVersion":"[variables('apiVersion')]",
+      "type":"Microsoft.Network/networkSecurityGroups",
+      "name":"[variables('networkSecurityGroupName')]",
+      "location":"[resourceGroup().location]",
+      "properties":{
+        "securityRules":[
           {
-            "name": "first_rule",
-            "properties": {
-              "description": "This is the first rule",
-              "protocol": "Tcp",
-              "sourcePortRange": "23-45",
-              "destinationPortRange": "46-56",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 123,
-              "direction": "Inbound"
+            "name":"first_rule",
+            "properties":{
+              "description":"This is the first rule",
+              "protocol":"Tcp",
+              "sourcePortRange":"23-45",
+              "destinationPortRange":"46-56",
+              "sourceAddressPrefix":"*",
+              "destinationAddressPrefix":"*",
+              "access":"Allow",
+              "priority":123,
+              "direction":"Inbound"
             }
           }
         ]
@@ -134,7 +125,7 @@
     {
       "type":"Microsoft.Storage/storageAccounts",
       "name":"[variables('storageAccountName')]",
-      "apiVersion":"2017-06-01",
+      "apiVersion":"[variables('apiVersion')]",
       "location":"[resourceGroup().location]",
       "sku":{
         "name":"[variables('storageAccountType')]"
@@ -145,7 +136,7 @@
       }
     },
     {
-      "apiVersion":"2017-04-01",
+      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Network/publicIPAddresses",
       "name":"[variables('publicIPAddressName')]",
       "location":"[resourceGroup().location]",
@@ -157,7 +148,7 @@
       }
     },
     {
-      "apiVersion":"2017-04-01",
+      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Network/virtualNetworks",
       "name":"[variables('virtualNetworkName')]",
       "location":"[resourceGroup().location]",
@@ -178,7 +169,7 @@
       }
     },
     {
-      "apiVersion":"2017-04-01",
+      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Network/networkInterfaces",
       "name":"[variables('nicName')]",
       "location":"[resourceGroup().location]",
@@ -204,7 +195,7 @@
       }
     },
     {
-      "apiVersion":"2017-03-30",
+      "apiVersion":"[variables('apiVersion')]",
       "type":"Microsoft.Compute/virtualMachines",
       "name":"[parameters('vmName')]",
       "location":"[resourceGroup().location]",
@@ -225,7 +216,7 @@
           "imageReference":{
             "publisher":"[variables('imagePublisher')]",
             "offer":"[variables('imageOffer')]",
-            "sku":"[parameters('ubuntuOSVersion')]",
+            "sku":"[variables('ubuntuOSVersion')]",
             "version":"latest"
           },
           "osDisk":{
@@ -250,7 +241,7 @@
     {
       "type":"Microsoft.Compute/virtualMachines/extensions",
       "name":"[concat(parameters('vmName'), '/', variables('vmExtensionName'))]",
-      "apiVersion":"2015-05-01-preview",
+      "apiVersion":"[variables('apiVersion')]",
       "location":"[resourceGroup().location]",
       "dependsOn":[
         "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
@@ -265,7 +256,7 @@
           "fileUris":[
             "[variables('customScriptFilePath')]"
           ],
-          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('certificateEmail'), ' ', parameters('emailDomain'), ' ', parameters('relayTo'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn)]"
+          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('adminEmail'), ' ', parameters('emailDomain'), ' ', parameters('relayTo'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn)]"
         }
       }
     }
