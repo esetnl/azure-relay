@@ -259,7 +259,7 @@ configure_postfix() {
   fi
 
   # Add alias for admin user
-  echo "root: $admin_email" >> /etc/aliases
+  /bin/echo "root: $admin_email" >> /etc/aliases
   /usr/bin/newaliases
 
   # Change config

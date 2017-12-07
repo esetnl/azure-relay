@@ -76,7 +76,7 @@
     }
   },
   "variables":{
-    "ubuntuOSVersion":"16.04.3-LTS",
+    "ubuntuOSVersion":"16.04.0-LTS",
     "storageAccountName":"[concat(uniquestring(resourceGroup().id), 'esets')]",
     "imagePublisher":"Canonical",
     "imageOffer":"UbuntuServer",
@@ -195,7 +195,7 @@
       }
     },
     {
-      "apiVersion":"[variables('apiVersion')]",
+      "apiVersion":"2017-12-01",
       "type":"Microsoft.Compute/virtualMachines",
       "name":"[parameters('vmName')]",
       "location":"[resourceGroup().location]",
