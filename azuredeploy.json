@@ -90,7 +90,7 @@
     "vmExtensionName":"esetsVmExtension",
     "vmSize":"Standard_A0",
     "virtualNetworkName":"[concat(parameters('vmName'), '-VNET')]",
-    "networkSecurityGroupName":"networkSecurityGroup",
+    "networkSecurityGroupName":"[concat(parameters('vmName'), '-networkSecurityGroup')]",
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef":"[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "customScriptFilePath":"https://raw.githubusercontent.com/d-maasland/azure-relay/master/deploy-esets.sh",
