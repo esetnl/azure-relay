@@ -77,19 +77,19 @@
   },
   "variables":{
     "ubuntuOSVersion":"16.04.3-LTS",
-    "storageAccountName":"[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
+    "storageAccountName":"[concat(parameters(vmName), uniquestring(resourceGroup().id))]",
     "imagePublisher":"Canonical",
     "imageOffer":"UbuntuServer",
-    "nicName":"myVMNic",
+    "nicName":"[concat(parameters(vmName), '-vmNic')]",
     "addressPrefix":"10.0.0.0/16",
     "subnetName":"Subnet",
     "subnetPrefix":"10.0.0.0/24",
     "storageAccountType":"Standard_LRS",
-    "publicIPAddressName":"myPublicIP",
+    "publicIPAddressName":"[concat(parameters(vmName), '-publicIp')]",
     "publicIPAddressType":"Dynamic",
-    "vmExtensionName":"myCustomScriptExtension",
+    "vmExtensionName":"esetsVmExtension",
     "vmSize":"Standard_A0",
-    "virtualNetworkName":"MyVNET",
+    "virtualNetworkName":"[concat(parameters(vmName), '-VNET')]",
     "networkSecurityGroupName":"networkSecurityGroup",
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef":"[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
@@ -233,7 +233,7 @@
         "diagnosticsProfile":{
           "bootDiagnostics":{
             "enabled":true,
-            "storageUri":"[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob)]"
+            "storageUri":"[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob)]"
           }
         }
       }

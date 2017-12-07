@@ -8,7 +8,7 @@ eav_pass="$2"
 lic_base64="$3"
 wwwi_user="$4"
 wwwi_pass="$5"
-cert_email="$6"
+admin_email="$6"
 domain="$7"
 relay_to="$8"
 fqdn="$9"
@@ -36,10 +36,11 @@ install_packages() {
 
   # List of debconf options
   debconf_options=(
-    "netfilter-persistent netfilter-persistent/autosave_v4 boolean false"
-    "netfilter-persistent netfilter-persistent/autosave_v6 boolean false"
+    "iptables-persistent iptables-persistent/autosave_v4 boolean false"
+    "iptables-persistent iptables-persistent/autosave_v6 boolean false"
   )
 
+  # Set debconf options
   if [ -f "/tmp/debconf_options.txt" ]; then
     /bin/rm -f -- "/tmp/debconf_options.txt"
   fi
@@ -47,6 +48,8 @@ install_packages() {
   for debconf_option in "${debconf_options[@]}"; do
     /bin/echo "$debconf_option" >> "/tmp/debconf_options.txt"
   done
+
+  /usr/bin/debconf-set-selections -- "/tmp/debconf_options.txt"
 
   # Update package list
   /usr/bin/apt-get "update"
@@ -230,7 +233,7 @@ configure_certificates() {
 
   # Request certificate
   /sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-  /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$cert_email" --agree-tos --no-eff-email
+  /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$admin_email" --agree-tos --no-eff-email
   # Check if request worked
   if [ "$?" != "0" ]; then
     exit 16
