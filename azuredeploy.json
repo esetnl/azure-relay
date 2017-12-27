@@ -104,19 +104,61 @@
       "name":"[variables('networkSecurityGroupName')]",
       "location":"[resourceGroup().location]",
       "properties":{
-        "securityRules":[
+        "SecurityRules":[
           {
-            "name":"first_rule",
+            "name":"AllowSmtp",
             "properties":{
-              "description":"This is the first rule",
+              "description":"Allow SMTP",
               "protocol":"Tcp",
-              "sourcePortRange":"23-45",
-              "destinationPortRange":"46-56",
-              "sourceAddressPrefix":"*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRange":"25",
               "destinationAddressPrefix":"*",
               "access":"Allow",
-              "priority":123,
-              "direction":"Inbound"
+              "direction":"Inbound",
+              "priority":100
+            }
+          },
+          {
+            "name":"AllowHttps",
+            "properties":{
+              "description":"Allow HTTPS",
+              "protocol":"Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRange":"443",
+              "destinationAddressPrefix":"*",
+              "access":"Allow",
+              "direction":"Inbound",
+              "priority":200
+            }
+          },
+          {
+            "name":"AllowSsh",
+            "properties":{
+              "description":"Allow SSH access",
+              "protocol":"Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRange":"22",
+              "destinationAddressPrefix":"*",
+              "access":"Allow",
+              "direction":"Inbound",
+              "priority":300
+            }
+          },
+          {
+            "name":"AllowHttp",
+            "properties":{
+              "description":"Allow HTTP access for certbot",
+              "protocol":"Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRange":"80",
+              "destinationAddressPrefix":"*",
+              "access":"Allow",
+              "direction":"Inbound",
+              "priority":400
             }
           }
         ]
@@ -130,10 +172,7 @@
       "sku":{
         "name":"[variables('storageAccountType')]"
       },
-      "kind":"Storage",
-      "properties":{
-
-      }
+      "kind":"Storage"
     },
     {
       "apiVersion":"[variables('apiVersion')]",
@@ -152,6 +191,9 @@
       "type":"Microsoft.Network/virtualNetworks",
       "name":"[variables('virtualNetworkName')]",
       "location":"[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]"
+      ],
       "properties":{
         "addressSpace":{
           "addressPrefixes":[
@@ -178,6 +220,9 @@
         "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
       ],
       "properties":{
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        },
         "ipConfigurations":[
           {
             "name":"ipconfig1",
