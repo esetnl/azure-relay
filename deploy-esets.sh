@@ -12,6 +12,7 @@ admin_email="$6"
 domain="$7"
 relay_to="$8"
 fqdn="$9"
+baseurl="https://raw.githubusercontent.com/d-maasland/azure-relay/master/"
 
 #############
 # Functions #
@@ -164,7 +165,7 @@ configure_esets() {
 # Configure socat to run as a service
 configure_socat() {
   if [ ! -f "/etc/systemd/system/socat.service" ]; then
-    /usr/bin/wget -O "/etc/systemd/system/socat.service" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/socat.service"
+    /usr/bin/wget -O "/etc/systemd/system/socat.service" -- "$baseurlsocat.service"
     # Check if download was succesful
     if [ "$?" != "0" ]; then
       exit 11
@@ -202,7 +203,7 @@ configure_iptables() {
   fi
 
   # IPv4 config
-  /usr/bin/wget -O "/etc/iptables/rules.v4" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/rules.v4"
+  /usr/bin/wget -O "/etc/iptables/rules.v4" -- "$baseurlrules.v4"
   
   # Check if download was succesful
   if [ "$?" != "0" ]; then
@@ -212,7 +213,7 @@ configure_iptables() {
   /bin/chmod 600 -- "/etc/iptables/rules.v4"
 
   # IPv6 Config
-  /usr/bin/wget -O "/etc/iptables/rules.v6" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/rules.v6"
+  /usr/bin/wget -O "/etc/iptables/rules.v6" -- "$baseurlrules.v6"
   
   # Check if download was succesful
   if [ "$?" != "0" ]; then
@@ -242,7 +243,7 @@ configure_certificates() {
 
   # Add to weekly cron
   if [ ! -f "/etc/cron.weekly/certbot" ]; then
-    /usr/bin/wget -O "/etc/cron.weekly/certbot" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/certbot"
+    /usr/bin/wget -O "/etc/cron.weekly/certbot" -- "$baseurlcertbot"
     
     # Check if download was succesful
     if [ "$?" != "0" ]; then
@@ -252,7 +253,7 @@ configure_certificates() {
 }
 
 configure_postfix() {
-  /usr/bin/wget -O "/etc/postfix/main.cf" -- "https://raw.githubusercontent.com/d-maasland/azure-relay/master/main.cf"
+  /usr/bin/wget -O "/etc/postfix/main.cf" -- "$baseurlmain.cf"
   # Check if download was succesful
   if [ "$?" != "0" ]; then
     exit 18
