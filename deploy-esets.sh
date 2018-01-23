@@ -336,11 +336,11 @@ server {
   }
 }
 EOF
-  ln -s /etc/nginx/sites-available/wwwi/etc/nginx/sites-enabled/wwi
-  cp /usr/share/nginx/html/50x.html /usr/share/nginx/html/error.html
+  /bin/ln -s /etc/nginx/sites-available/wwwi/etc/nginx/sites-enabled/wwi
+  /bin/cp /usr/share/nginx/html/50x.html /usr/share/nginx/html/error.html
   service nginx reload
 }
-}
+
 
 #######
 # Run #
