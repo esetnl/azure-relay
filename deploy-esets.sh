@@ -12,6 +12,7 @@ admin_email="$6"
 domain="$7"
 relay_to="$8"
 fqdn="$9"
+$adminusername="$10"
 baseurl="https://raw.githubusercontent.com/esetnl/azure-relay/master"
 
 #############
@@ -277,7 +278,7 @@ configure_postfix() {
 }
 download_agentscript() {
  
-    /usr/bin/wget -O "/home/$" -- "$baseurl/install_eraagent.sh"
+    /usr/bin/wget -O "/home/$adminusername/install_eraagent.sh" -- "$baseurl/install_eraagent.sh"
     # Check if download was succesful
     if [ "$?" != "0" ]; then
       exit 19
