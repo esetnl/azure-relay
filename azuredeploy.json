@@ -301,7 +301,7 @@
           "fileUris":[
             "[variables('customScriptFilePath')]"
           ],
-          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('adminEmail'), ' ', parameters('emailDomain'), ' ', parameters('relayTo'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn)]"
+          "commandToExecute":"[concat(variables('customScriptCommandToExecute'), ' ', parameters('licenseUsername'), ' ', parameters('licensePassword'), ' ', parameters('licenseFile'), ' ', parameters('webUsername'), ' ', parameters('webPassword'), ' ', parameters('adminEmail'), ' ', parameters('emailDomain'), ' ', parameters('relayTo'), ' ', parameters('adminUsername'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn)]"
         }
       }
     }
