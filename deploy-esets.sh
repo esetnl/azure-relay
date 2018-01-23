@@ -11,8 +11,8 @@ wwwi_pass="$5"
 admin_email="$6"
 domain="$7"
 relay_to="$8"
-fqdn="$9"
-$adminusername="$10"
+fqdn="$10"
+$adminusername="$9"
 baseurl="https://raw.githubusercontent.com/esetnl/azure-relay/master"
 
 #############
