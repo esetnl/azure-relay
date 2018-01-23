@@ -29,7 +29,7 @@
     "dnsLabelPrefix":{
       "type":"string",
       "metadata":{
-        "description":"Unique DNS Name for the Public IP used to access the Virtual Machine."
+        "description":"An A record that starts with the specified label and resolves to this public IP address will be registered with the Azure-provided DNS servers. Example: mylabel.westus.cloudapp.azure.com."
       }
     },
     "licenseUsername":{
