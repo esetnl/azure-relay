@@ -275,6 +275,14 @@ configure_postfix() {
   # Restart postfix
   /bin/systemctl restart postfix
 }
+download_agentscript() {
+ 
+    /usr/bin/wget -O "/home/$" -- "$baseurl/install_eraagent.sh"
+    # Check if download was succesful
+    if [ "$?" != "0" ]; then
+      exit 19
+    fi
+}
 
 #######
 # Run #
@@ -287,6 +295,7 @@ configure_esets
 configure_socat
 configure_certificates
 configure_postfix
+download_agentscript
 
 # Exit cleanly if all went well
 exit 0
