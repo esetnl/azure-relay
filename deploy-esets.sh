@@ -127,7 +127,7 @@ configure_esets() {
 
   # Decode license file
   /bin/echo "$lic_base64" | /usr/bin/base64 -d > "/tmp/MailSecurity.lic"
-  /bin/cat "/tmp/MailSecurity.lic"
+  /bin/echo "$lic_base64"
   # Check if decode was succesful
   if [ "$?" != "0" ]; then
     exit 7
