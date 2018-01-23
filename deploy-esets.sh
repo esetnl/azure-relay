@@ -11,8 +11,8 @@ wwwi_pass="$5"
 admin_email="$6"
 domain="$7"
 relay_to="$8"
-fqdn="{$10}"
-$adminusername="$9"
+fqdn="${10}"
+adminusername="$9"
 baseurl="https://raw.githubusercontent.com/esetnl/azure-relay/master"
 
 #############
@@ -30,6 +30,7 @@ install_packages() {
     "libc6-i386"
     "socat"
     "postfix"
+    "nginx"
     "iptables-persistent"
     "unattended-upgrades"
     "software-properties-common"
@@ -286,6 +287,59 @@ download_agentscript() {
     if [ "$?" != "0" ]; then
       exit 19
     fi
+}
+
+configure_nginx() {
+  /bin/sed -i 's|# server_tokens off;|server_tokens off;|g' /etc/nginx/nginx.conf
+  /bin/rm /etc/nginx/sites-enabled/default
+  /bin/mkdir /etc/nginx/ssl
+  /bin/mkdir /etc/ssl/cert
+  /usr/bin/openssl dhparam -out /etc/nginx/ssl/dhparams.pem 2048
+  /bin/cat > /etc/nginx/sites-available/wwwi <<EOF
+server {
+  listen 80;
+  return 301 https://\$host\$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  add_header X-Frame-Options "SAMEORIGIN";
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains;";
+
+  access_log /var/log/nginx/wwwi_access.log;
+  error_log /var/log/nginx/wwwi_error.log;
+
+  ssl_certificate /etc/ssl/cert/STAR_eracloud_nl.pem;
+  ssl_certificate_key /etc/ssl/cert/star_eracloud_nl_key.pem;
+  ssl_prefer_server_ciphers On;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA;
+  ssl_dhparam /etc/nginx/ssl/dhparams.pem;
+
+  location / {
+  proxy_read_timeout 120;
+  proxy_set_header X-Real-IP \$remote_addr;
+  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+  proxy_set_header Host \$http_host;
+  proxy_pass http://127.0.0.1:8080;
+  proxy_intercept_errors on;
+  }
+
+  error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 418 420 422 423 424 426 428 429 431 444 449 450 451 500 501 502 503 504 505 506 507 508 509 510 511 /error.html;
+
+  location /error.html {
+    root /usr/share/nginx/html;
+  }
+
+  location ~ ^/$ {
+  return 301 https://\$host;
+  }
+}
+EOF
+  ln -s /etc/nginx/sites-available/wwwi/etc/nginx/sites-enabled/wwi
+  cp /usr/share/nginx/html/50x.html /usr/share/nginx/html/error.html
+  service nginx reload
+}
 }
 
 #######
