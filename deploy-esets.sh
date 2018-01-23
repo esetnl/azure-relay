@@ -12,7 +12,7 @@ admin_email="$6"
 domain="$7"
 relay_to="$8"
 fqdn="$9"
-baseurl="https://raw.githubusercontent.com/d-maasland/azure-relay/master"
+baseurl="https://raw.githubusercontent.com/esetnl/azure-relay/master"
 
 #############
 # Functions #
