@@ -11,7 +11,7 @@ wwwi_pass="$5"
 admin_email="$6"
 domain="$7"
 relay_to="$8"
-fqdn="$10"
+fqdn="{$10}"
 $adminusername="$9"
 baseurl="https://raw.githubusercontent.com/esetnl/azure-relay/master"
 
@@ -274,6 +274,7 @@ configure_postfix() {
   /bin/echo "$domain" > "/etc/postfix/domains"
   /bin/echo "$domain relay:[$relay_to]" > "/etc/postfix/transport"
   /usr/sbin/postmap -- "/etc/postfix/transport"
+  /usr/sbin/postmap -- "/etc/postfix/virtual"
 
   # Restart postfix
   /bin/systemctl restart postfix
