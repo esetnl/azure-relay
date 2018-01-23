@@ -237,14 +237,17 @@ configure_certificates() {
 
   # Request certificate
   /sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+  /bin/systemctl stop nginx
+
   /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$admin_email" --agree-tos --no-eff-email
+  
 
   # Check if request worked
   if [ "$?" != "0" ]; then
     exit 16
   fi
   /sbin/iptables -D INPUT -p tcp --dport 80 -j ACCEPT
-
+  /bin/systemctl start nginx
   # Add to weekly cron
   if [ ! -f "/etc/cron.weekly/certbot" ]; then
     /usr/bin/wget -O "/etc/cron.weekly/certbot" -- "$baseurl/certbot"
@@ -272,6 +275,8 @@ configure_postfix() {
 
   # Change config
   /bin/sed -i "s|<azure-fqdn>|$fqdn|g" -- "/etc/postfix/main.cf"
+  /bin/sed -i "s|/etc/ssl/certs/ssl-cert-snakeoil.pem|/etc/letsencrypt/live/$fqdn/fullchain.pem|g" -- "/etc/postfix/main.cf"
+  /bin/sed -i "s|/etc/ssl/private/ssl-cert-snakeoil.key|/etc/letsencrypt/live/$fqdn/fullchain.pem|g" -- "/etc/postfix/main.cf"
   /bin/echo "$domain" > "/etc/postfix/domains"
   /bin/echo "$domain relay:[$relay_to]" > "/etc/postfix/transport"
   /usr/sbin/postmap -- "/etc/postfix/transport"
@@ -309,8 +314,8 @@ server {
   access_log /var/log/nginx/wwwi_access.log;
   error_log /var/log/nginx/wwwi_error.log;
 
-  ssl_certificate /etc/ssl/cert/STAR_eracloud_nl.pem;
-  ssl_certificate_key /etc/ssl/cert/star_eracloud_nl_key.pem;
+  ssl_certificate ;
+  ssl_certificate_key /etc/letsencrypt/live/$fqdn/privkey.pem;
   ssl_prefer_server_ciphers On;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
   ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA;
@@ -354,6 +359,7 @@ configure_socat
 configure_certificates
 configure_postfix
 download_agentscript
+configure_nginx
 
 # Exit cleanly if all went well
 exit 0
