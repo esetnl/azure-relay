@@ -127,7 +127,7 @@ configure_esets() {
 
   # Decode license file
   /bin/echo "$lic_base64" | /usr/bin/base64 -d > "/tmp/MailSecurity.lic"
-  /bin/echo "$lic_base64"
+
   # Check if decode was succesful
   if [ "$?" != "0" ]; then
     exit 7
@@ -237,7 +237,7 @@ configure_certificates() {
   # Request certificate
   /sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
   /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$admin_email" --agree-tos --no-eff-email
-  /bin/echo "$fqdn"
+
   # Check if request worked
   if [ "$?" != "0" ]; then
     exit 16
