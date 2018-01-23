@@ -146,7 +146,7 @@ configure_esets() {
   # Enable wwwi
   /opt/eset/esets/sbin/esets_set --set="agent_enabled=yes" --section="wwwi"
   /opt/eset/esets/sbin/esets_set --set="listen_addr=0.0.0.0" --section="wwwi"
-  /opt/eset/esets/sbin/esets_set --set="listen_port=443" --section="wwwi"
+  /opt/eset/esets/sbin/esets_set --set="listen_port=4430" --section="wwwi"
   /opt/eset/esets/sbin/esets_set --set="username=$wwwi_user" --section="wwwi"
   /opt/eset/esets/sbin/esets_set --set="password=$wwwi_pass" --section="wwwi"
 
@@ -314,7 +314,7 @@ server {
   access_log /var/log/nginx/wwwi_access.log;
   error_log /var/log/nginx/wwwi_error.log;
 
-  ssl_certificate ;
+  ssl_certificate /etc/letsencrypt/live/$fqdn/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/$fqdn/privkey.pem;
   ssl_prefer_server_ciphers On;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
@@ -326,7 +326,7 @@ server {
   proxy_set_header X-Real-IP \$remote_addr;
   proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
   proxy_set_header Host \$http_host;
-  proxy_pass http://127.0.0.1:8080;
+  proxy_pass http://127.0.0.1:4430;
   proxy_intercept_errors on;
   }
 
@@ -336,12 +336,9 @@ server {
     root /usr/share/nginx/html;
   }
 
-  location ~ ^/$ {
-  return 301 https://\$host;
-  }
 }
 EOF
-  /bin/ln -s /etc/nginx/sites-available/wwwi/etc/nginx/sites-enabled/wwi
+  /bin/ln -s /etc/nginx/sites-available/wwwi /etc/nginx/sites-enabled/wwi
   /bin/cp /usr/share/nginx/html/50x.html /usr/share/nginx/html/error.html
   service nginx reload
 }
