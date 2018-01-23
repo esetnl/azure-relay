@@ -237,6 +237,7 @@ configure_certificates() {
   # Request certificate
   /sbin/iptables -A INPUT -p tcp --dport 80 -j ACCEPT
   /usr/bin/certbot certonly --standalone --preferred-challenges http -d "$fqdn" -m "$admin_email" --agree-tos --no-eff-email
+  /bin/echo "$fqdn"
   # Check if request worked
   if [ "$?" != "0" ]; then
     exit 16
