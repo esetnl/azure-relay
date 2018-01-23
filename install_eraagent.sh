@@ -10,6 +10,12 @@ era_hostname="$3"
 #############
 # Functions #
 #############
+check_params() {
+
+if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]] || [[ $1 = "?" ]] || [[ $1 = "--help" ]]; then
+  echo usage install_eraagent.sh username password hostname
+  exit 1
+ fi
 
 install_eraagent() {
   # Remove installer file if it exists
@@ -22,7 +28,7 @@ install_eraagent() {
   
     # Check if download was succesful
   if [ "$?" != "0" ]; then
-    exit 1
+    exit 2
   fi
   
   # Install ERA Agent
@@ -37,6 +43,7 @@ install_eraagent() {
 #######
 # Run #
 #######
+check_params
 install_eraagent
 
 # Exit cleanly if all went well
