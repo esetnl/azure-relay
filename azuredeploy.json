@@ -93,7 +93,7 @@
     "networkSecurityGroupName":"[concat(parameters('vmName'), '-networkSecurityGroup')]",
     "vnetID":"[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef":"[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "customScriptFilePath":"https://raw.githubusercontent.com/d-maasland/azure-relay/master/deploy-esets.sh",
+    "customScriptFilePath":"https://raw.githubusercontent.com/esetnl/azure-relay/master/deploy-esets.sh",
     "customScriptCommandToExecute":"/bin/bash deploy-esets.sh",
     "apiVersion":"2017-10-01"
   },
