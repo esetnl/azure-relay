@@ -119,34 +119,7 @@
               "priority":100
             }
           },
-          {
-            "name":"AllowHttps",
-            "properties":{
-              "description":"Allow HTTPS",
-              "protocol":"Tcp",
-              "sourcePortRange": "*",
-              "sourceAddressPrefix": "*",
-              "destinationPortRange":"443",
-              "destinationAddressPrefix":"*",
-              "access":"Allow",
-              "direction":"Inbound",
-              "priority":200
-            }
-          },
-          {
-            "name":"AllowSsh",
-            "properties":{
-              "description":"Allow SSH access",
-              "protocol":"Tcp",
-              "sourcePortRange": "*",
-              "sourceAddressPrefix": "*",
-              "destinationPortRange":"22",
-              "destinationAddressPrefix":"*",
-              "access":"Allow",
-              "direction":"Inbound",
-              "priority":300
-            }
-          },
+          ,
           {
             "name":"AllowHttp",
             "properties":{
