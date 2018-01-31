@@ -3,9 +3,9 @@
 #############
 # Variables #
 #############            
-webconsole_user="$1"
-webconsole_pass="$2"
-era_hostname="$3"
+#webconsole_user="$1"
+#webconsole_pass="$2"
+#era_hostname="$3"
 
 #############
 # Functions #
@@ -16,6 +16,17 @@ if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]] || [[ $1 = "?" ]] || [[ $1 = "--hel
   echo usage install_eraagent.sh username password hostname
   exit 1
  fi
+}
+
+
+ask_params() {
+ echo Please fill in ERA fqdn (e.g. era.domain.com) please ensure port 2223 is open.
+ read era_hostname
+ echo Please fill in ERA (webconsole) Administrator username
+ read -p 'Username:' webconsole_user
+ echo Please fill in ERA (webconsole) Administrator Password
+ read -sp 'Password:' webconsole_pass
+}
 
 install_eraagent() {
   # Remove installer file if it exists
@@ -43,7 +54,8 @@ install_eraagent() {
 #######
 # Run #
 #######
-check_params
+#check_params
+ask_params
 install_eraagent
 
 # Exit cleanly if all went well
