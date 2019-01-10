@@ -20,11 +20,11 @@ if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]] || [[ $1 = "?" ]] || [[ $1 = "--hel
 
 
 ask_params() {
- echo Please fill in ERA fqdn (e.g. era.domain.com) please ensure port 2223 is open.
+ echo "Please fill in ERA fqdn (e.g. era.domain.com) please ensure port 2223 is open."
  read era_hostname
- echo Please fill in ERA (webconsole) Administrator username
+ echo "Please fill in ERA (webconsole) Administrator username"
  read -p 'Username:' webconsole_user
- echo Please fill in ERA (webconsole) Administrator Password
+ echo "Please fill in ERA (webconsole) Administrator Password"
  read -sp 'Password:' webconsole_pass
 }
 
